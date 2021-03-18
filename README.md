@@ -5,7 +5,7 @@
 2. Real Time Clock
 3. Bluetooth Log Transfer
 4. MicroSD Slot(Fat16, Fat32, exFat, ...) (See SdFat Library to see more information)
-5. Log Visualization
+5. Log Visualization (https://github.com/luckyabsoluter/bruxism-log-viewer)
 
 # Parts
 1. Board: ESPDuino-32
