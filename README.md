@@ -9,7 +9,7 @@
 
 # Parts
 1. Board: ESPDuino-32
-2. EMG: Gravity EMG Sensor by OYMotion
+2. EMG: ~~Gravity EMG Sensor by OYMotion~~ It seem to have some(or many) problem. It will be updated soon.
 3. LCD: ILI9341 2.4inch 320x240 SPI Module
 4. RTC: DS3231 I2C Module
 5. Storage: MicroSD Card Adaptor Module
