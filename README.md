@@ -1,5 +1,12 @@
 # bruxism-recorder
 
+# Features
+1. Bruxism Log(EMG signal)
+2. Real Time Clock
+3. Bluetooth Log Transfer
+4. MicroSD Slot(Fat16, Fat32, exFat, ...) (See SdFat Library to see more information)
+5. Log Visualization
+
 # Parts
 1. Board: ESPDuino-32
 2. EMG: Gravity EMG Sensor by OYMotion
@@ -21,6 +28,4 @@ Unzip `libraries.zip` to `Document/Arduino/`.
 
 https://github.com/espressif/arduino-esp32/blob/master/docs/arduino-ide/windows.md
 
-Do not use `arduino-esp32 1.0.5`.
-
-It has bluetooth issue.
+Do not use `arduino-esp32 1.0.5`. It has bluetooth issue.
