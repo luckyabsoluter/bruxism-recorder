@@ -324,10 +324,18 @@ void TaskEMG(void *pvParameters) {
 
     int emg = readEMG();
     String value = rtc.getTime("%Y%m%d%H%M%S") + to_format(rtc.getMillis(), 3) + ":" + emg;
-    emgList.add(value.c_str());
+    emgList.add(copy_str(value));
 
     vTaskDelay(EMGSensorTime - (millis() - t));
   }
+}
+
+const char* copy_str(String& str) {
+  int len = str.length();
+  char *buffer = new char[len + 1];   //we need extra char for NUL
+  memcpy(buffer, str.c_str(), len + 1);
+  
+  return buffer;
 }
 
 int readEMG() {
@@ -365,6 +373,7 @@ void TaskSDCard(void *pvParameters) {
       String str = value + newLine;
       bool success = writeFile(SD, filePath.c_str(), str.c_str());
       emgList.remove(0);
+      delete value;
     }
   }
 }
