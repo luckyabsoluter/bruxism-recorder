@@ -28,6 +28,7 @@ EMGFilters myFilter;
 SAMPLE_FREQUENCY sampleRate = SAMPLE_FREQ_1000HZ;
 NOTCH_FREQUENCY humFreq = NOTCH_FREQ_50HZ;
 
+const unsigned long timeBudget = 1e6 / sampleRate;
 // static int Threshold = 0;
 
 LinkedList<const char*> emgList = LinkedList<const char*>();
@@ -320,13 +321,19 @@ void TaskEMG(void *pvParameters) {
   for(;;) {
     if(!taskEMG) vTaskDelete(NULL);
 
-    t += EMGSensorTime;
-
-    int emg = readEMG();
+    int emg = readEMGMax(EMGSensorTime);
     String value = rtc.getTime("%Y%m%d%H%M%S") + to_format(rtc.getMillis(), 3) + ":" + emg;
     emgList.add(copy_str(value));
 
-    vTaskDelay(EMGSensorTime - (millis() - t));
+    t += EMGSensorTime;
+    int delayTime = t - millis();
+    if(delayTime > EMGSensorTime) {
+      t = millis();
+    } else if(delayTime > 0) {
+      delay(delayTime);
+    } else if(delayTime < -EMGSensorTime) {
+      t = millis();
+    }
   }
 }
 
@@ -336,6 +343,35 @@ const char* copy_str(String& str) {
   memcpy(buffer, str.c_str(), len + 1);
   
   return buffer;
+}
+
+int readEMGMax(int count) {
+  int envlopeMax = 0;
+  unsigned long targetTime = micros();
+
+  int i = 0;
+  while(true) {
+    int envlope = readEMG();
+    if(envlopeMax < envlope) {
+      envlopeMax = envlope;
+    }
+
+    if(!(i++ < count)) {
+      break;
+    }
+    
+    targetTime += timeBudget;
+    int delayTime = targetTime - micros();
+    if(delayTime > timeBudget) {
+      targetTime = micros();
+    } else if(delayTime > 0) {
+      delayMicroseconds(delayTime);
+    } else if(delayTime < -timeBudget) {
+      targetTime = micros();
+    }
+  }
+
+  return envlopeMax;
 }
 
 int readEMG() {
@@ -530,6 +566,8 @@ void TaskLCD(void *pvParameters) {
   
   sprInfo.setTextSize(1);
   sprInfo.createSprite(240, sprInfo.fontHeight() * 5);
+  int lcdEMG = 0;
+  int lcdEMGTime = 0;
 
   bool pressed = false;
   bool pressedPrevious = false;
@@ -547,6 +585,12 @@ void TaskLCD(void *pvParameters) {
       int minute = (t/60)%60;
       int second = (t%60);
       sprInfo.println(String("Measurement Time: ") + hour + "h " + minute + "m " + second + "s");
+    } else {
+      if(lcdEMGTime < millis()) {
+        lcdEMGTime = millis() + 1000;
+        lcdEMG = readEMGMax(100);
+      }
+      sprInfo.println(String("EMG: ") + lcdEMG);
     }
     if(sdError) {
       sprInfo.println("SDCard Error");
