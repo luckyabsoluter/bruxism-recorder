@@ -397,25 +397,29 @@ void TaskSDCard(void *pvParameters) {
   taskSDCard = true;
 
   createDir(SD, getLogDirectoryPath());
-  String filePath = getLogFilePath();
+  const char* filePath = getLogFilePath();
 
   const String newLine = String("\n");
 
   for(;;) {
-    if(!taskSDCard) vTaskDelete(NULL);
+    if(!taskSDCard) {
+        delete filePath;
+        vTaskDelete(NULL);
+    }
 
     while(emgList.size() != 0) {
       const char* value = emgList.get(0);
       String str = value + newLine;
-      bool success = writeFile(SD, filePath.c_str(), str.c_str());
+      bool success = writeFile(SD, filePath, str.c_str());
       emgList.remove(0);
       delete value;
     }
   }
 }
 
-String getLogFilePath() {
-  return String("/bruxismLog/bruxismLog-" + rtc.getTime("%Y%m%d") + ".txt");
+const char* getLogFilePath() {
+  String str = String("/bruxismLog/bruxismLog-" + rtc.getTime("%Y%m%d") + ".txt");
+  return copy_str(str);
 }
 
 const char* getLogDirectoryPath() {
