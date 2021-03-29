@@ -543,7 +543,7 @@ void TaskLCD(void *pvParameters) {
     stopButton->enable();
     startButton->disable();
     
-    xTaskCreatePinnedToCore(TaskEMG, "TaskEMG", 1024*2, NULL, 1, NULL, ARDUINO_RUNNING_CORE);
+    xTaskCreatePinnedToCore(TaskEMG, "TaskEMG", 1024*2, NULL, 1, NULL, 0);
     xTaskCreatePinnedToCore(TaskSDCard, "TaskSDCard", 1024*10, NULL, 1, NULL, ARDUINO_RUNNING_CORE);
     
     measurementTime = millis();
@@ -598,6 +598,9 @@ void TaskLCD(void *pvParameters) {
     }
     if(sdError) {
       sprInfo.println("SDCard Error");
+    } else {
+      if(SD.sdErrorCode()) {
+        sprInfo.println(String("SD Error: ") + SD.sdErrorCode());
     }
     if(bluetoothConfirmNumber != -1) { // BT pairing confirm number
       sprInfo.println(String("Bluetooth Pairing Confirm: ") + bluetoothConfirmNumber);
