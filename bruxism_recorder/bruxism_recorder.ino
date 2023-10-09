@@ -270,6 +270,7 @@ void setup() {
   Wire.begin();
   get3231Date(); // D3231(external RTC) -> RAM
 
+  if (year < 17) year = 17; // if year < 16, it make 'ESP32Time rtc' slow. 5 sec
   rtc.setTime(seconds, minutes, hours, date, month, year + 2000); // RAM -> ESP32 RTC(internal RTC)
 
   // Serial.println(rtc.getTime("%Y%m%d%H%M%S")); // Time debug
