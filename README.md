@@ -26,6 +26,6 @@ Unzip `libraries.zip` to `Document/Arduino/`.
 
 2. Arduino core for the ESP32 for Arduino IDE
 
-https://github.com/espressif/arduino-esp32/blob/master/docs/arduino-ide/windows.md
+https://github.com/espressif/arduino-esp32/blob/1.0.6/docs/arduino-ide/windows.md
 
 Do not use `arduino-esp32 1.0.5`. It has bluetooth issue.
